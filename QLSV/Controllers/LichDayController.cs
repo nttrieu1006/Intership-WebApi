@@ -68,7 +68,7 @@ namespace QLSV.Controllers
                 err.Add("Lớp không tồn tại");
             }
             GiaoVien giaovien = db.GiaoViens.FirstOrDefault(x => x.Id == model.GvId);
-            if (lop == null)
+            if (giaovien == null)
             {
                 err.Add("Giáo viên không tồn tại");
             }

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Model
 {
+    [Table("GiaoVien")]
     public class GiaoVien : Entity<long>, IUser
     {
         [MaxLength(256)]
