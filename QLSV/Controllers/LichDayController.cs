@@ -1,5 +1,6 @@
 ﻿using Model;
 using QLSV.ViewModel;
+using System;
 using System.Linq;
 using System.Web.Http;
 
@@ -72,6 +73,14 @@ namespace QLSV.Controllers
             {
                 err.Add("Giáo viên không tồn tại");
             }
+            if (model.TGBatDau.HasValue && model.TGBatDau < DateTime.Now)
+            {
+                err.Add("Thời gian bắt đầu phải lớn hơn ngày hiện tại");
+            }
+            if (model.TGKetThuc.HasValue && model.TGKetThuc < model.TGBatDau)
+            {
+                err.Add("Thời gian kết thúc phải lớn hơn bắt đầu");
+            }
             if (err.errors.Count == 0)
             {
                 LichDay lichDay = new LichDay();
@@ -100,9 +109,16 @@ namespace QLSV.Controllers
             if (lichDay == null)
             {
                 err.Add("Không tìm thấy");
-                httpActionResult = Ok(err);
             }
-            else
+            if(model.TGBatDau.HasValue && model.TGBatDau < DateTime.Now)
+            {
+                err.Add("Thời gian bắt đầu phải lớn hơn ngày hiện tại");
+            }
+            if(model.TGKetThuc.HasValue && model.TGKetThuc < model.TGBatDau)
+            {
+                err.Add("Thời gian kết thúc phải lớn hơn bắt đầu");
+            }
+            if(err.errors.Count == 0)
             {
                 lichDay.GiaoVien = db.GiaoViens.FirstOrDefault(x => x.Id == model.GvId) ?? db.GiaoViens.FirstOrDefault(x => x.Id == model.GvId);
                 lichDay.Lop = db.Lops.FirstOrDefault(x => x.Id == model.LopId) ?? db.Lops.FirstOrDefault(x => x.Id == model.LopId);
@@ -111,7 +127,11 @@ namespace QLSV.Controllers
 
                 db.Entry(lichDay).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
-                httpActionResult = Ok(lichDay);
+                httpActionResult = Ok(new LichDayModel(lichDay));
+            }
+            else
+            {
+                httpActionResult = Ok(err);
             }
             return httpActionResult;
         }
